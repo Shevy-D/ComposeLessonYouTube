@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.shevy.composelessonyoutube.ui.screens.MainScreen
 import com.shevy.composelessonyoutube.ui.theme.ComposeLessonYouTubeTheme
 import org.json.JSONObject
 
@@ -36,12 +37,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeLessonYouTubeTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("London", this@MainActivity)
-                }
+                MainScreen()
+                /*                Surface(
+                                    modifier = Modifier.fillMaxSize(),
+                                    color = MaterialTheme.colorScheme.background
+                                ) {
+                                    Greeting("London", this@MainActivity)
+                                }*/
             }
         }
     }
