@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,6 +33,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.shevy.composelessonyoutube.R
+import com.shevy.composelessonyoutube.data.WeatherModel
 import com.shevy.composelessonyoutube.ui.ListItem
 import com.shevy.composelessonyoutube.ui.theme.BlueLight
 import kotlinx.coroutines.launch
@@ -141,11 +143,11 @@ fun TabLayout() {
     ) {
         TabRow(
             selectedTabIndex = tabIndex,
-/*            indicator = { pos ->
-                TabRowDefaults.Indicator(
-                    Modifier.pagerTabIndicatorOffset(pagerState, pos)
-                )
-            },*/
+            /*            indicator = { pos ->
+                            TabRowDefaults.Indicator(
+                                Modifier.pagerTabIndicatorOffset(pagerState, pos)
+                            )
+                        },*/
             containerColor = BlueLight,
             contentColor = Color.White
         ) {
@@ -170,9 +172,32 @@ fun TabLayout() {
         ) { index ->
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
-            ){
-                items(15){
-                    ListItem()
+            ) {
+                itemsIndexed(
+                    listOf(
+                        WeatherModel(
+                            "London",
+                            "10:00",
+                            "25ºC",
+                            "Sunny",
+                            "//cdn.weatherapi.com/weather/64x64/day/116.png",
+                            "",
+                            "",
+                            ""
+                        ),
+                        WeatherModel(
+                            "London",
+                            "26/07/2023",
+                            "",
+                            "Sunny",
+                            "//cdn.weatherapi.com/weather/64x64/day/116.png",
+                            "26º",
+                            "12º",
+                            "jkdsjdfjkdfjkdf"
+                        )
+                    )
+                ) { _, item ->
+                    ListItem(item)
                 }
             }
         }
