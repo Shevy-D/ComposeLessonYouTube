@@ -3,8 +3,12 @@ package com.shevy.composelessonyoutube
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.shevy.composelessonyoutube.bottom_navigation.MainScreen
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
+import com.shevy.composelessonyoutube.ui.RuleScreen
 import com.shevy.composelessonyoutube.ui.theme.ComposeLessonYouTubeTheme
+import com.shevy.composelessonyoutube.ui.theme.GreenBg
 
 class MainActivity : ComponentActivity() {
 
@@ -12,7 +16,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeLessonYouTubeTheme {
-                MainScreen()
+                // A surface container using the 'background' color from the theme
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = GreenBg
+                ) {
+                    RuleScreen()
+                }
             }
         }
     }
