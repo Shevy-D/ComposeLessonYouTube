@@ -36,11 +36,18 @@ import com.google.accompanist.pager.rememberPagerState
 import com.shevy.composelessonyoutube.R
 import com.shevy.composelessonyoutube.data.WeatherModel
 import com.shevy.composelessonyoutube.ui.ListItem
+import com.shevy.composelessonyoutube.ui.MainList
 import com.shevy.composelessonyoutube.ui.theme.BlueLight
 import kotlinx.coroutines.launch
+import org.json.JSONArray
+import org.json.JSONObject
 
 @Composable
-fun MainCard(currentDay: MutableState<WeatherModel>) {
+fun MainCard(
+    currentDay: MutableState<WeatherModel>,
+    onClickSync: () -> Unit,
+    onClickSearch: () -> Unit
+) {
     Column(
         modifier = Modifier
             .padding(5.dp)
@@ -79,7 +86,10 @@ fun MainCard(currentDay: MutableState<WeatherModel>) {
                     color = Color.White
                 )
                 Text(
-                    text = currentDay.value.currentTemp.toFloat().toInt().toString() + "ºC",
+                    text = if (currentDay.value.currentTemp.isNotEmpty())
+                        currentDay.value.currentTemp.toFloat().toInt().toString() + "ºC"
+                    else currentDay.value.maxTemp.toFloat().toInt().toString() +
+                            "ºC/${currentDay.value.minTemp.toFloat().toInt()}ºC",
                     style = TextStyle(fontSize = 65.sp),
                     color = Color.White
                 )
@@ -93,9 +103,7 @@ fun MainCard(currentDay: MutableState<WeatherModel>) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     IconButton(
-                        onClick = {
-
-                        }
+                        onClick = { onClickSearch.invoke() }
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_search),
@@ -115,9 +123,7 @@ fun MainCard(currentDay: MutableState<WeatherModel>) {
                         color = Color.White
                     )
                     IconButton(
-                        onClick = {
-
-                        }
+                        onClick = { onClickSync.invoke() }
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_sync),
@@ -133,7 +139,7 @@ fun MainCard(currentDay: MutableState<WeatherModel>) {
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun TabLayout(daysList: MutableState<List<WeatherModel>>) {
+fun TabLayout(daysList: MutableState<List<WeatherModel>>, currentDay: MutableState<WeatherModel>) {
     val tabList = listOf("HOURS", "DAYS")
     val pagerState = rememberPagerState()
     val tabIndex = pagerState.currentPage
@@ -149,11 +155,6 @@ fun TabLayout(daysList: MutableState<List<WeatherModel>>) {
     ) {
         TabRow(
             selectedTabIndex = tabIndex,
-            /*            indicator = { pos ->
-                            TabRowDefaults.Indicator(
-                                Modifier.pagerTabIndicatorOffset(pagerState, pos)
-                            )
-                        },*/
             containerColor = BlueLight,
             contentColor = Color.White
         ) {
@@ -176,15 +177,34 @@ fun TabLayout(daysList: MutableState<List<WeatherModel>>) {
             state = pagerState,
             modifier = Modifier.weight(1.0f)
         ) { index ->
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                itemsIndexed(
-                    daysList.value
-                ) { _, item ->
-                    ListItem(item)
-                }
+            val list = when (index) {
+                0 -> getWeatherByHours(currentDay.value.hours)
+                1 -> daysList.value
+                else -> daysList.value
             }
+            MainList(list, currentDay)
         }
     }
+}
+
+private fun getWeatherByHours(hours: String): List<WeatherModel> {
+    if (hours.isEmpty()) return listOf()
+    val hoursArray = JSONArray(hours)
+    val list = ArrayList<WeatherModel>()
+    for (i in 0 until hoursArray.length()) {
+        val item = hoursArray[i] as JSONObject
+        list.add(
+            WeatherModel(
+                "",
+                item.getString("time"),
+                item.getString("temp_c").toFloat().toInt().toString() + "ºC",
+                item.getJSONObject("condition").getString("text"),
+                item.getJSONObject("condition").getString("icon"),
+                "",
+                "",
+                ""
+            )
+        )
+    }
+    return list
 }

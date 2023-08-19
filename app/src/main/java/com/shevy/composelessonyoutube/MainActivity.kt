@@ -19,12 +19,13 @@ import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.shevy.composelessonyoutube.data.WeatherModel
+import com.shevy.composelessonyoutube.ui.DialogSearch
 import com.shevy.composelessonyoutube.ui.screens.MainCard
 import com.shevy.composelessonyoutube.ui.screens.TabLayout
 import com.shevy.composelessonyoutube.ui.theme.ComposeLessonYouTubeTheme
 import org.json.JSONObject
 
-const val API_KEY = "012c748818fd41bbbdf112239221805"
+const val API_KEY = "71905cf4f2ab40da9e8142341222207"
 
 class MainActivity : ComponentActivity() {
 
@@ -34,6 +35,9 @@ class MainActivity : ComponentActivity() {
             ComposeLessonYouTubeTheme {
                 val daysList = remember {
                     mutableStateOf(listOf<WeatherModel>())
+                }
+                val dialogState = remember {
+                    mutableStateOf(false)
                 }
                 val currentDay = remember {
                     mutableStateOf(
@@ -49,10 +53,15 @@ class MainActivity : ComponentActivity() {
                         )
                     )
                 }
+                if (dialogState.value) {
+                    DialogSearch(dialogState, onSubmit = {
+                        getData(it, this, daysList, currentDay)
+                    })
+                }
                 getData("London", this, daysList, currentDay)
                 Image(
                     painter = painterResource(
-                        id = R.drawable.weather_bg
+                        id = R.drawable.background
                     ),
                     contentDescription = "im1",
                     modifier = Modifier
@@ -61,8 +70,13 @@ class MainActivity : ComponentActivity() {
                     contentScale = ContentScale.FillBounds
                 )
                 Column {
-                    MainCard(currentDay)
-                    TabLayout(daysList)
+                    MainCard(currentDay, onClickSync = {
+                        getData("London", this@MainActivity, daysList, currentDay)
+                    }, onClickSearch = {
+                        dialogState.value = true
+                    }
+                    )
+                    TabLayout(daysList, currentDay)
                 }
             }
         }
